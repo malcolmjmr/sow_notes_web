@@ -29,7 +29,7 @@
         <span>{#if folderCount > 0} {folderCount} Folders : {/if} {noteCount} Note{noteCount > 1 ? 's' : ''}</span>
     </div>
     <div class="right">
-        <img class="button" scr={createNoteIcon} on:mousedown={createNote} alt="Create Note" />
+        <img class="button" src={createNoteIcon} on:mousedown={createNote} alt="" />
     </div>
 </div>
 
@@ -37,9 +37,9 @@
     .footer {
         display: flex;
         justify-content: space-between;
-        padding: 1rem;
+        padding: 8px 16px 10px 10px;
         background-color: black;
-        color: white;
+        color: #555;
         border-top: 1px solid #333;
     }
 
@@ -53,10 +53,11 @@
     .footer .center {
         flex-grow: 1;
         justify-content: center;
+        font-size: 14px;
     }
 
-    .footer button {
-        margin: 0 0.5rem;
+    .footer .button:hover {
+        cursor: pointer;
     }
 </style>
 

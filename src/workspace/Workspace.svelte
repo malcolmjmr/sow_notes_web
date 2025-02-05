@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { documents, workspaces } from '../store.js';
+    import { activeDocumentId, documents, workspaces } from '../store.js';
     import DocumentListItem from './DocumentListItem.svelte';
     import WorkspaceFooter from './WorkspaceFooter.svelte';
 
@@ -45,7 +45,26 @@
         activeWorkspaceId.set(newWorkspace.id);
     }
     function createNote(event) {
-        console.log('create note');
+        /*
+            Create the note and then change active document
+        */
+        let newDocument = {
+            id: Math.random().toString(36).substring(2, 15),
+            title: 'New Note',
+            content: '',
+            created: Date.now(),
+            updated: Date.now(),
+            workspaceId: workspace ? workspace.id : null,
+        };
+
+        // add the document to the store
+        documents.update((documents) => {
+            documents[newDocument.id] = newDocument;
+            return documents;
+        });
+
+        // set the active document
+        activeDocumentId.set(newDocument.id);
     }
 
     function navigateToParentWorkspace(event) {
@@ -55,6 +74,10 @@
             // navigate to root workspace
             activeWorkspaceId.set(null);
         }
+    }
+
+    function onDocumenetUpdated(event) {
+        load();
     }
 
 </script>
@@ -68,7 +91,7 @@
     {/if}
     <div class="recent-documents">
         {#each recentDocuments as document}
-            <DocumentListItem {document} on:click={openDocument} />
+            <DocumentListItem {document} on:click={openDocument} on:updated={onDocumenetUpdated} />
         {/each}
     </div>
     <WorkspaceFooter 
@@ -88,7 +111,9 @@
         width: 20%;
         min-width: 100px;
         max-width: 400px;
-        height: 100vh;
+        height: calc(100% - 20px);
+
+        padding: 20px 0px 0px 0px;
         background-color: black;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
@@ -120,7 +145,7 @@
     .recent-documents {
         flex: 1;
         overflow-y: auto;
-        padding: 1rem;
+       
         display: flex;
         flex-direction: column;
     }

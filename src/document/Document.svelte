@@ -8,6 +8,8 @@
 
     let activeBlock;
     let loaded;
+
+    let view = 'chat';
    
     onMount(() => {
         load();
@@ -18,6 +20,15 @@
         console.log('activeDocId', activeDocId);    
         document = $documents[activeDocId];
         console.log('document', document);
+        if (!document.blocks) document.blocks = [];
+        if (document.blocks.length === 0) {
+            document.blocks.push({
+                id: Math.random().toString(36).substring(2, 15),
+                content: '',
+                lastAccessed: Date.now(),
+            });
+        }
+        addEventListeners();
         loaded = true;
     }
 
@@ -87,6 +98,28 @@
         }
     }
 
+    function addEventListeners() {
+        //window.document.addEventListener('cut', copyHandler);
+        window.document.addEventListener('copy', copyHandler);
+    }
+
+    let lastViewUpdate = Date.now();
+    async function copyHandler(event) {
+        if (!document) return;
+        const text = await navigator.clipboard.readText();
+
+        let blockIndex = document.blocks.findIndex((b) => b.id === $activeBlockId);
+        let block = document.blocks[blockIndex];
+        if (!block.clipboard) block.clipboard = [];
+        block.clipboard.push(text);
+        document.blocks[blockIndex] = block;
+        document = { ...document };
+        $documents[document.id] = document;
+        view = 'clipboard';
+        lastViewUpdate = Date.now();
+
+    }
+
 </script>
 {#if loaded}
 <div class="document">
@@ -109,7 +142,7 @@
 
     </div>
     {#if $activeBlockId}
-        <BlockDetails activeBlockId={$activeBlockId} bind:document/>
+        <BlockDetails {lastViewUpdate} activeBlockId={$activeBlockId} bind:document bind:view/>
     {/if}
 </div>
 {/if}
@@ -117,9 +150,9 @@
 <style>
     .document {
         display: flex;
-        height: calc(100% - 40px);
+        height: calc(100% - 20px);
         width: 100%;
-        margin: 20px 0 20px 0px;
+        margin: 20px 0 0px 0px;
     }
 
     .content {
@@ -128,8 +161,9 @@
         flex: 1;
         padding: 1rem;
         overflow-y: auto;
-        background-color: #333333;
+        background-color: #222;
         border-radius: 20px;
+        margin-bottom: 20px;
     }
 
     .header {

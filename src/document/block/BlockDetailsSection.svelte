@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
     import Chat from './Chat.svelte';
     import Clipboard from './Clipboard.svelte';
     import Objectives from './Objectives.svelte';
@@ -7,6 +8,11 @@
     export let block;
     export let view = null;
     export let showTitle = false;
+
+    onMount(() => {
+        console.log('loading block details');
+        console.log('view', view);
+    }); 
 
 </script>
 
@@ -26,3 +32,23 @@
     </div>
 </div>
 {/if}
+
+<style>
+    .block-details-section {
+        display: flex;
+        flex-direction: column;
+        height: calc(100%);
+        width: calc(100%);
+        padding: 0px;
+    }
+
+    h2 {
+        font-size: 1.2em;
+        margin-bottom: 8px;
+    }
+
+    .view {
+        display: flex;
+        height: 100%;
+    }
+</style>

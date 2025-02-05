@@ -1,42 +1,70 @@
 import { config } from "./config";
 
-class LLMService {
+export class LLMService {
     constructor() {
 
     }
 
-    async chat({ message, history, systemMessage, model, temperature }) {
-        const prompt = {
-            model,
-            messages: [
-                ...(systemMessage ? [{ role: 'system', content: systemMessage }] : []),
-                ...history.map(([role, content]) => ({ role, content })),
-                { role: 'user', content: message },
-            ],
-            temperature,
-        };
+    async chat(prompt) {
+        console.log('chat');
+        console.log('history');
+        console.log(history);
 
         return await this.geminiChatCompletion(prompt);
          
     }
 
-    async geminiChatCompletion(prompt) {
+    async geminiChatCompletion({ message, history, systemMessage, model, temperature }) {
+
+        let body = {
+            contents: [
+                ...history.map((m) => { 
+                    return {
+                        role: m.role == 'user' ? 'user' : 'model',
+                        parts: [{
+                            text: m.content
+                        }]
+                    }
+                }),
+                {
+                    role: 'user',
+                    parts: [{
+                        text: message
+                    }]
+                }
+            ],
+        };
+
+        if (systemMessage) {
+
+            body.systemInstruction = {
+                role: 'user',
+                parts: [{
+                    text: systemMessage
+                }]
+            };
+
+        }
+
         
-        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateMessage', {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-exp-1206:generateContent?key=${config.apiKeys.gemini}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${config.apiKeys.gemini}`,
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify(prompt),
+            body: JSON.stringify(body)
         });
-
+            
+    
         if (!response.ok) {
+            console.log('response');
+            console.log(await response.json());
+            return;
             throw new Error(`Error: ${response.statusText}`);
         }
 
         const data = await response.json();
-        return data.candidates[0].content;
+        return data.candidates[0].content.parts[0].text;
     }
 
     async openaiChatCompletion(prompt) {

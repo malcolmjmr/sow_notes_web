@@ -11,6 +11,7 @@
     import Block from './block/Block.js';
     import { Suggestion } from './block/Suggestion.js';
     import LLMService from '../services/llm.js';
+  import DocumentDetails from './details/DocumentDetails.svelte';
 
     let loaded = false;
     let view = 'document';
@@ -23,7 +24,7 @@
     let suggestedText = null;
     let autocompleteStartingText = null;
 
-    let showDetails = false;
+    let showDetails = true;
 
     documents.subscribe((value) => {
         if (document?.id && value[document.id]) {
@@ -340,11 +341,7 @@ Separate each suggestion with "|". Do not provide any additional text.
         </div>
     {/if}
     {#if showDetails}
-    <BlockDetails 
-        {lastViewUpdate} 
-        bind:document 
-        bind:view
-    />
+        <DocumentDetails {document} />
     {/if}
 </div>
 {/if}

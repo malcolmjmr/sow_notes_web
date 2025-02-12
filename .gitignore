@@ -3,5 +3,5 @@
 
 .DS_Store
 
-src/services/config.js
+/src/services/config.js
 

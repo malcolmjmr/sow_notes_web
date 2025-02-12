@@ -51,8 +51,6 @@
         let chat = block.chat ?? { messages: [] };
 
         
-       
-        // Simulate AI response
         let llm = new LLMService();
         let response = await llm.chat({ 
             message: input, 

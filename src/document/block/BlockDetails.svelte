@@ -2,10 +2,10 @@
     import { onMount } from "svelte";
     import BlockDetailsSection from "./BlockDetailsSection.svelte";
     import { documents } from "../../store";
+    import { activeBlockId } from "../../store";
 
     
     export let document;
-    export let activeBlockId;
     export let lastViewUpdate;
 
     export let view = 'chat';
@@ -19,11 +19,16 @@
     let loaded;
 
     function load() {
-        console.log('loading block details');
-        console.log('activeBlockId', activeBlockId);
-
-        block = document.blocks.find(block => block.id === activeBlockId);
+        listenForActiveBlockUpdate();
         loaded = true;
+    }
+
+    function listenForActiveBlockUpdate() {
+        activeBlockId.subscribe((value) => {
+            if (value !== block?.id) {
+                block = document.blocks.find(block => block.id === value);
+            }
+        });
     }
 
     /*

@@ -6,9 +6,6 @@ export class LLMService {
     }
 
     async chat(prompt) {
-        console.log('chat');
-        console.log('history');
-        console.log(history);
 
         return await this.geminiChatCompletion(prompt);
          
@@ -47,7 +44,7 @@ export class LLMService {
         }
 
         
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-exp-1206:generateContent?key=${config.apiKeys.gemini}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite-preview-02-05:generateContent?key=${config.apiKeys.gemini}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

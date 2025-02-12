@@ -109,7 +109,7 @@
         display: flex;
         flex-direction: column;
         width: 20%;
-        min-width: 100px;
+        min-width: 200px;
         max-width: 400px;
         height: calc(100% - 20px);
 
